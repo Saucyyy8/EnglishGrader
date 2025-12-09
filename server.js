@@ -44,9 +44,18 @@ Your task is to:
    - Grammatical correctness
    - Coherence and flow
    - Only significantly wrong spelling mistakes (ignore minor typos)
-3. Consider essay length: 2 pages is a good benchmark for full marks with minimal errors.
-4. Be lenient but honest. Focus on structural and grammatical issues, not nitpicking.
-5. Return STRICT JSON format (no markdown):
+3. Essay length consideration: 2 pages is ideal for good marks.
+
+SCORING GUIDELINES (be realistic and varied):
+- 9-10: Exceptional work, minimal errors, excellent structure, appropriate length
+- 7-8: Good work, few errors, solid structure, decent length
+- 5-6: Average, some errors, basic structure, may be too short/long
+- 3-4: Below average, many errors, weak structure
+- 0-2: Poor, numerous critical errors, incoherent
+
+Be honest and varied in your scoring. Not every essay deserves a 7. Assess realistically.
+
+Return STRICT JSON (no markdown):
 {
   "score": <number 0-10>,
   "errors": [
