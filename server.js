@@ -32,17 +32,21 @@ app.post('/grade', async (req, res) => {
 
         console.log(`Received submission for question: ${question.substring(0, 50)}... with ${images.length} images`);
 
-        // Construct image tokens for Qwen VL
         const imageTokens = images.map(() => '<image>').join('');
         const textPrompt = `${imageTokens}
 You are an expert English teacher grading a student's composition.
 The student chose this question: "${question}"
 
 Your task is to:
-1. Read the handwritten answer from the provided images (read ALL pages).
-2. Evaluate it based on grammar, sentence structure, coherence, spelling, and expression.
-3. Be lenient but honest. Do not punish harshly, but highlight mistakes.
-4. Return the result in STRICT JSON format with no markdown blocks. The JSON must have this structure:
+1. Read the handwritten answer from ALL provided images.
+2. Evaluate based on:
+   - Sentence formation and structure
+   - Grammatical correctness
+   - Coherence and flow
+   - Only significantly wrong spelling mistakes (ignore minor typos)
+3. Consider essay length: 2 pages is a good benchmark for full marks with minimal errors.
+4. Be lenient but honest. Focus on structural and grammatical issues, not nitpicking.
+5. Return STRICT JSON format (no markdown):
 {
   "score": <number 0-10>,
   "errors": [
@@ -53,8 +57,7 @@ Your task is to:
       "issue": "<what_is_wrong>",
       "fix": "<corrected_version>"
     }
-  ],
-  "feedback": "<overall_feedback_paragraph>"
+  ]
 }
 `;
 
