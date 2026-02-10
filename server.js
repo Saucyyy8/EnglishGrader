@@ -34,9 +34,31 @@ app.post('/grade', async (req, res) => {
         console.log(`Received submission for question: ${question.substring(0, 50)}... with ${images.length} images`);
 
         const imageTokens = images.map(() => '<image>').join('');
+
+        // Check if this is the picture question (question 5)
+        const isPictureQuestion = question.includes("Study the picture given below");
+
+        let questionContext = `The student chose this question: "${question}"`;
+
+        if (isPictureQuestion) {
+            questionContext += `
+            
+CONTEXT FOR THE PICTURE QUESTION:
+The student is writing based on a picture. Since you cannot see the original picture prompt, here is a detailed description of it to help you judge if the student's composition is relevant:
+
+Detailed Description of the Picture:
+The picture is a black-and-white photograph showing two young children engaged in the act of planting a sapling. The scene appears to be set outdoors, possibly in a garden, park, or a patch of open land surrounded by trees.
+Both children are squatting close to the ground, indicating active participation rather than passive observation. One child, positioned slightly to the right, is holding the sapling upright with both hands, ensuring that it stands straight in the soil. The other child, on the left, seems to be assisting by arranging or pressing the soil around the base of the plant. Their postures suggest cooperation, care, and shared responsibility.
+The sapling is thin and young, with a few delicate leaves at the top, symbolising new life, growth, and hope. The soil around it looks freshly disturbed, indicating that the planting has just taken place. The ground is uneven and natural, not manicured, reinforcing the idea that this is a real effort rather than a symbolic or staged activity.
+In the background, tall trees and foliage can be seen, creating a natural setting and giving depth to the image. The trees appear mature, contrasting with the fragile sapling in the foreground. This contrast subtly highlights the idea that today’s small actions can lead to tomorrow’s strong outcomes.
+The children’s facial expressions, though not very sharp due to the grainy quality of the image, appear focused and sincere. There is no sense of playfulness or distraction; instead, the mood is serious yet positive, suggesting that the children understand the importance of what they are doing.
+Overall, the picture conveys themes of environmental awareness, responsibility, teamwork, and nurturing nature. It suggests that protecting the environment begins at a young age and that collective effort is essential for a greener future.
+`;
+        }
+
         const textPrompt = `${imageTokens}
 You are an expert English teacher grading a student's composition.
-The student chose this question: "${question}"
+${questionContext}
 
 Your task is to:
 1. Read the handwritten answer from ALL provided images.
@@ -45,16 +67,19 @@ Your task is to:
    - Grammatical correctness
    - Coherence and flow
    - Only significantly wrong spelling mistakes (ignore minor typos)
+   ${isPictureQuestion ? '- Relevance to the picture description provided above' : ''}
 3. Essay length consideration: 2 pages is ideal for good marks.
 
-SCORING GUIDELINES (be realistic and varied):
-- 9-10: Exceptional work, minimal errors, excellent structure, appropriate length
-- 7-8: Good work, few errors, solid structure, decent length
-- 5-6: Average, some errors, basic structure, may be too short/long
-- 3-4: Below average, many errors, weak structure
-- 0-2: Poor, numerous critical errors, incoherent
+SCORING GUIDELINES (Moderate Stringency):
+- Be moderate in your marking. Do not be too lenient, but do not be overly strict either.
+- Reward creativity and good expression, but penalize clear grammatical errors and lack of structure.
+- 9-10: Exceptional work, deep understanding, near perfect language.
+- 7-8: Good work, clear expression, minor errors.
+- 5-6: Average, understandable but with noticeable grammatical or structural issues.
+- 3-4: Below average, struggling with sentence formation.
+- 0-2: Poor, incoherent or irrelevant.
 
-Be honest and varied in your scoring. Not every essay deserves a 7. Assess realistically.
+Assess realistically. Not every essay deserves a 7 or 8. Use the full range if necessary, but aim for a fair, balanced, moderate standard.
 
 Return STRICT JSON (no markdown):
 {
