@@ -56,8 +56,30 @@ Overall, the picture conveys themes of environmental awareness, responsibility, 
 `;
         }
 
-        const textPrompt = `${imageTokens}
-You are an expert English teacher grading a student's composition.
+        // Build content array
+        const content = [{ type: 'text', text: imageTokens }];
+
+        images.forEach(img => {
+            const base64Data = img.includes(',') ? img : `data:image/jpeg;base64,${img}`;
+            content.push({
+                type: 'image_url',
+                image_url: { url: base64Data }
+            });
+        });
+
+        // Call OpenAI API
+        const response = await fetch('https://api.openai.com/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o',
+                messages: [
+                    {
+                        role: 'system',
+                        content: `You are an expert English teacher grading a student's composition.
 ${questionContext}
 
 Your task is to:
@@ -70,16 +92,15 @@ Your task is to:
    ${isPictureQuestion ? '- Relevance to the picture description provided above' : ''}
 3. Essay length consideration: 2 pages is ideal for good marks.
 
-SCORING GUIDELINES (Moderate Stringency):
-- Be moderate in your marking. Do not be too lenient, but do not be overly strict either.
-- Reward creativity and good expression, but penalize clear grammatical errors and lack of structure.
-- 9-10: Exceptional work, deep understanding, near perfect language.
-- 7-8: Good work, clear expression, minor errors.
-- 5-6: Average, understandable but with noticeable grammatical or structural issues.
-- 3-4: Below average, struggling with sentence formation.
-- 0-2: Poor, incoherent or irrelevant.
+SCORING GUIDELINES (Strict & Elite Standard):
+- Be STRICT. Do not list minor or trivial errors. Focus on significant issues.
+- 9-10: Perfect or near-perfect. Rare exceptional work.
+- 7-8: Very good, but with some room for improvement.
+- 5-6: Average. Meets basic requirements but lacks polish or depth.
+- 3-4: Below average. Significant grammatical or structural issues.
+- 0-2: Poor. Incoherent or irrelevant.
 
-Assess realistically. Not every essay deserves a 7 or 8. Use the full range if necessary, but aim for a fair, balanced, moderate standard.
+Assess strictly. A 7 should be hard to earn.
 
 Return STRICT JSON (no markdown):
 {
@@ -93,39 +114,22 @@ Return STRICT JSON (no markdown):
       "fix": "<corrected_version>"
     }
   ]
-}
-`;
-
-        // Build content array
-        const content = [{ type: 'text', text: textPrompt }];
-
-        images.forEach(img => {
-            const base64Data = img.includes(',') ? img : `data:image/jpeg;base64,${img}`;
-            content.push({
-                type: 'image_url',
-                image_url: { url: base64Data }
-            });
-        });
-
-        // Call Fireworks API
-        const response = await fetch('https://api.fireworks.ai/inference/v1/chat/completions', {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${process.env.FIREWORKS_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: 'accounts/fireworks/models/qwen3-vl-235b-a22b-instruct',
-                messages: [{ role: 'user', content }],
+}`
+                    },
+                    {
+                        role: 'user',
+                        content
+                    }
+                ],
                 max_tokens: 4096,
-                temperature: 0.6,
+                temperature: 0.4, // Lower temperature for more consistent/strict grading
                 response_format: { type: 'json_object' }
             })
         });
 
         if (!response.ok) {
             const errorText = await response.text();
-            console.error('Fireworks API Error:', errorText);
+            console.error('OpenAI API Error:', errorText);
             return res.status(500).json({ error: 'Failed to communicate with AI provider', details: errorText });
         }
 
