@@ -33,7 +33,7 @@ app.post('/grade', async (req, res) => {
 
         console.log(`Received submission for question: ${question.substring(0, 50)}... with ${images.length} images`);
 
-        const imageTokens = images.map(() => '<image>').join('');
+
 
         // Check if this is the picture question (question 5)
         const isPictureQuestion = question.includes("Study the picture given below");
@@ -57,7 +57,8 @@ Overall, the picture conveys themes of environmental awareness, responsibility, 
         }
 
         // Build content array
-        const content = [{ type: 'text', text: imageTokens }];
+        // Note: OpenAI does not need <image> tokens in the text content. It processes images in the array directly.
+        const content = [{ type: 'text', text: 'Please grade this student\'s work based on the system instructions.' }];
 
         images.forEach(img => {
             const base64Data = img.includes(',') ? img : `data:image/jpeg;base64,${img}`;
