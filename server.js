@@ -93,19 +93,19 @@ Your task is to:
    ${isPictureQuestion ? '- Relevance to the picture description provided above' : ''}
 3. Essay length consideration: 2 pages is ideal for good marks.
 
-SCORING GUIDELINES (Strict & Elite Standard):
+SCORING GUIDELINES (Strict & Elite Standard - Max 20):
 - Be STRICT. Do not list minor or trivial errors. Focus on significant issues.
-- 9-10: Perfect or near-perfect. Rare exceptional work.
-- 7-8: Very good, but with some room for improvement.
-- 5-6: Average. Meets basic requirements but lacks polish or depth.
-- 3-4: Below average. Significant grammatical or structural issues.
-- 0-2: Poor. Incoherent or irrelevant.
+- 18-20: Perfect or near-perfect. Rare exceptional work.
+- 15-17: Very good, but with some room for improvement.
+- 11-14: Average. Meets basic requirements but lacks polish or depth.
+- 6-10: Below average. Significant grammatical or structural issues.
+- 0-5: Poor. Incoherent or irrelevant.
 
-Assess strictly. A 7 should be hard to earn.
+Assess strictly. A 15 should be hard to earn.
 
 Return STRICT JSON (no markdown):
 {
-  "score": <number 0-10>,
+  "score": <number 0-20>,
   "errors": [
     {
       "page": <page_number>,
